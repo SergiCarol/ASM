@@ -1,0 +1,95 @@
+---
+title: "Homework 2"
+author: "Sergi Carol & Mikael"
+date: "October 8, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## example2 ANCOVA
+
+```{r echo=FALSE}
+library(ggplot2)
+library(car) 
+library(MASS)
+
+load("ais.Rdata")
+load("birthw.RData")
+
+attach(ais)
+model2<-lm(pcBfat~ssf+sex)
+res2<-stdres(model2)
+
+ais[which(res2>3),]
+ais2<-ais[-which(res2>3),]
+
+model4<-lm(log(pcBfat)~log(ssf)+sex, data=ais2)
+summary(model4)
+
+plot(fitted(model4),stdres(model4))
+res2<-stdres(model4)
+```
+
+```{r}
+summary(model4)
+```
+
+#### Deduce which is the change in the pcBfat by changing one unit the ssf?
+
+From the summary of the model we can see how the estimated forumla predicted from the liniar model is as follows, in the case of a male (since the female is the baseline case we would ommit the -2.96 parameter):
+
+log(_pcbFat) = - 0.80288 * log(ssf) - 0.23584 * sexm + e_
+
+This means that every change of unit of _ssf_ augments the vaue of __pcbFat__ by e^0.80288, which is 2.232 .
+
+
+#### Which is the pcBfat predicted for a male with a ssf of 54? and Which is the pcBfat predicted for a female with a sff of 48?
+
+To do so we will create a dataframe with the values we want to predict, and then I will predict the outcome using the liniar model we have created.
+```{r}
+ssf_data <- data.frame(ssf = c(54, 48), sex = c('m', 'f'))
+res <- predict.lm(model4, newdata=ssf_data)
+names(res) <- c("male", "female")
+res <- exp(res)
+res
+```
+In the case of a male with a value of SSF of 54 we get a predicted pcbFat value of 9.617927.
+
+In the case of a female with a value of SSF of 48 we get a predicted pcbFat value of 11.044816.
+
+#### Which has to be the ssf of a male in order to have a pcBfat of 14.7? and for a female?
+To do so we will create a new model (model 5) with the __ssf__ as the target attribute, which will be calculated using pcBfat and sex.
+```{r}
+model5 <- lm(ssf ~ pcBfat+sex, data=ais2)
+summary(model5)
+
+pcBfat_data <- data.frame(pcBfat = c(14.7, 14.7), sex=c('m', 'f'))
+res <- predict.lm(model5, newdata=pcBfat_data)
+plot(fitted(model5),stdres(model5))
+```
+
+As what happend with model 2 and 3, we see how the residuals are not between -2 and 2, thus we will apply the same concept of model4, using a log scale.
+```{r}
+model5 <- lm(log(ssf) ~ log(pcBfat)+sex, data=ais2)
+summary(model5)
+
+pcBfat_data <- data.frame(pcBfat = c(14.7, 14.7), sex=c('m', 'f'))
+res <- predict.lm(model5, newdata=pcBfat_data)
+plot(fitted(model5),stdres(model5))
+names(res) <- c("male", "female")
+res <- exp(res)
+res
+```
+Although we still have some residuals over 2, we can accept this results, since all the other metrics indicate that this is indeed a good model.
+
+As we can see the predicted outcomes for the target attribute _ssf_ are _86.787_ and _68.5134_
+
+#### Interpred the standard error value.
+
+```{r}
+summary(model4)
+```
+From the residual standard error value we can gather information about how good our model is, in this case we have a really low residual error which is a good indicator, meaning that our model is really good. If we take a closer look at the residuals we see how we are moving between an 0.2 error from the mean.

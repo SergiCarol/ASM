@@ -92,3 +92,30 @@ g2_28 <- g2[g2$dia == 28,]
 
 # Use T student p-value > 0.005 means similar
 t.test(g1_7$pH, g2_7$pH)
+var.test(g1_7$pH, g2_7$pH) # Smaller than 0.005 same variance
+
+t.test(g1_7$strep, g2_7$strep)
+var.test(g1_7$strep, g2_7$strep)
+
+t.test(g1_7$lactob, g2_7$lactob)
+var.test(g1_7$lactob, g2_7$lactob)
+
+t.test(g1_14$pH, g2_14$pH)
+var.test(g1_14$pH, g2_14$pH)
+
+t.test(g1_14$strep, g2_14$strep)
+var.test(g1_14$strep, g2_14$strep)
+
+t.test(g1_14$lactob, g2_14$lactob)
+var.test(g1_14$lactob, g2_14$lactob)
+
+t.test(g1_28$pH, g2_28$pH)
+var.test(g1_28$pH, g2_28$pH)
+
+t.test(g1_28$strep, g2_28$strep)
+var.test(g1_28$strep, g2_28$strep)
+
+t.test(g1_28$lactob, g2_28$lactob)
+var.test(g1_28$lactob, g2_28$lactob)
+
+#### C ####
